@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen">
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="ml-64 p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Animal Management</h1>
+            <a th:href="@{/animals/add}" class="px-4 py-2 bg-green-700 text-white rounded-lg font-bold shadow-md hover:bg-green-800 transition-colors">
+                <i class="fas fa-plus mr-2"></i> ADD ANIMAL
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b border-gray-100">
+                    <tr class="text-xs font-bold text-gray-500 uppercase">
+                        <th class="px-6 py-4">Name</th>
+                        <th class="px-6 py-4">Species</th>
+                        <th class="px-6 py-4">Tag #</th>
+                        <th class="px-6 py-4">Habitat</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <tr th:each="animal : ${animals}" class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-gray-800" th:text="${animal.name}">Simba</td>
+                        <td class="px-6 py-4 text-gray-600" th:text="${animal.species != null ? animal.species.commonName : 'N/A'}">Lion</td>
+                        <td class="px-6 py-4 text-gray-600 font-mono text-sm" th:text="${animal.tagNumber}">#L-101</td>
+                        <td class="px-6 py-4 text-gray-600" th:text="${animal.habitat != null ? animal.habitat.habitatName : 'N/A'}">Savannah</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded" th:text="${animal.healthStatus}">Stable</span>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <a th:href="@{/animals/edit/{id}(id=${animal.animalId})}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></a>
+                            <a th:href="@{/animals/delete/{id}(id=${animal.animalId})}" class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

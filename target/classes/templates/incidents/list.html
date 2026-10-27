@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen">
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="ml-64 p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Incident Logs</h1>
+            <a th:href="@{/incidents/add}" class="px-4 py-2 bg-red-600 text-white rounded-lg font-bold shadow-md hover:bg-red-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i> REPORT INCIDENT
+            </a>
+        </div>
+
+        <div class="space-y-4">
+            <div th:each="incident : ${incidents}" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-8" th:classappend="${incident.incidentStatus == 'Urgent' ? 'border-red-500' : 'border-yellow-400'}">
+                <div class="flex items-center space-x-6">
+                    <div class="bg-gray-50 p-4 rounded-xl">
+                        <i class="fas fa-exclamation-triangle text-2xl" th:classappend="${incident.incidentStatus == 'Urgent' ? 'text-red-500' : 'text-yellow-500'}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-lg" th:text="${incident.incidentType}">Injury Report</h4>
+                        <p class="text-sm text-gray-500">
+                            <span class="font-bold text-green-700" th:text="${incident.animal != null ? incident.animal.name : 'N/A'}">Animal</span> • 
+                            <!-- Habitat hidden for debug -->
+                            <span th:text="${incident.location}">Location</span> • 
+                            <span th:text="${incident.incidentDate != null ? #temporals.format(incident.incidentDate, 'MMM dd, yyyy HH:mm') : 'N/A'}">Date</span>
+                        </p>
+                        <p class="mt-2 text-sm text-gray-600 italic" th:text="${incident.description}">Description...</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right mr-4">
+                        <p class="text-xs font-bold text-gray-400 uppercase">Assigned Ranger</p>
+                        <p class="text-sm font-bold text-gray-800" th:text="${incident.ranger?.name}">John Smith</p>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <a th:href="@{/incidents/edit/{id}(id=${incident.incidentId})}" class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-bold text-center">EDIT</a>
+                        <a th:href="@{/incidents/delete/{id}(id=${incident.incidentId})}" class="px-3 py-1 bg-red-50 text-red-600 rounded text-xs font-bold text-center">DELETE</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(incidents)}" class="text-center py-20 bg-white rounded-2xl border border-gray-100">
+                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+                <p class="text-gray-500 font-bold">All clear! No current incidents reported.</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

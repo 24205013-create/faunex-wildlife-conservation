@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen">
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="ml-64 p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Visitor Records</h1>
+            <a th:href="@{/visitors/add}" class="px-4 py-2 bg-green-700 text-white rounded-lg font-bold">ADD VISITOR</a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 uppercase text-xs font-bold text-gray-500">
+                    <tr>
+                        <th class="px-6 py-4">Name</th>
+                        <th class="px-6 py-4">Contact</th>
+                        <th class="px-6 py-4">Purpose</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <tr th:each="visitor : ${visitors}">
+                        <td class="px-6 py-4 font-bold text-gray-800" th:text="${visitor.name}">Alice</td>
+                        <td class="px-6 py-4 text-gray-600" th:text="${visitor.contact}">alice@mail.com</td>
+                        <td class="px-6 py-4 text-gray-600" th:text="${visitor.purpose}">Research</td>
+                        <td class="px-6 py-4 text-right">
+                            <a th:href="@{/visitors/edit/{id}(id=${visitor.visitorId})}" class="text-blue-500 mr-3"><i class="fas fa-edit"></i></a>
+                            <a th:href="@{/visitors/delete/{id}(id=${visitor.visitorId})}" class="text-red-500"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

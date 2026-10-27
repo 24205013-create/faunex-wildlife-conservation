@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen">
+    <div th:replace="~{layout :: sidebar}"></div>
+    <main class="ml-64 p-8">
+        <div class="mb-6">
+            <a th:href="@{/incidents}" class="text-green-700 font-bold text-sm"><i class="fas fa-arrow-left mr-1"></i> BACK TO LOGS</a>
+            <h1 class="text-2xl font-bold text-gray-800 mt-2">Report Incident</h1>
+        </div>
+
+        <div th:if="${param.error}" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-xl">
+            <div class="flex">
+                <i class="fas fa-times-circle text-red-500 mt-0.5"></i>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700 font-bold">Failed to save report. Please check the data and try again.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-2xl overflow-hidden">
+            <form th:action="@{/incidents/save}" th:object="${incident}" method="post" class="p-8 space-y-6">
+                <input type="hidden" th:field="*{incidentId}">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Incident Type</label>
+                        <select th:field="*{incidentType}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none">
+                            <option value="Health Issue">Health Issue</option>
+                            <option value="Habitat Damage">Habitat Damage</option>
+                            <option value="Illegal Activity">Illegal Activity</option>
+                            <option value="Feeding Deviation">Feeding Deviation</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Priority Status</label>
+                        <select th:field="*{incidentStatus}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none">
+                            <option value="Routine">Routine</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Involved Animal</label>
+                        <select th:field="*{animal.animalId}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none">
+                            <option value="">None / Not Applicable</option>
+                            <option th:each="a : ${animals}" th:value="${a.animalId}" th:text="${a.name}"></option>
+                        </select>
+                    </div>
+                    <div th:if="${!isRangerUser}">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Assigned Ranger</label>
+                        <select th:field="*{ranger.rangerId}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none">
+                            <option value="">Select Ranger</option>
+                            <option th:each="r : ${rangers}" th:value="${r.rangerId}" th:text="${r.name}"></option>
+                        </select>
+                    </div>
+                    <div th:if="${isRangerUser}">
+                        <input type="hidden" th:field="*{ranger.rangerId}">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Assigned Ranger</label>
+                        <div class="px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-gray-500 italic" th:text="${incident.ranger != null ? incident.ranger.name : 'Your profile'}">Your Name</div>
+                    </div>
+                    <!--
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Related Habitat</label>
+                        <select th:field="*{habitat.habitatId}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none">
+                            <option value="">None / All Park</option>
+                            <option th:each="h : ${habitats}" th:value="${h.habitatId}" th:text="${h.habitatName}"></option>
+                        </select>
+                    </div>
+                    -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Location Detail</label>
+                        <input type="text" th:field="*{location}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none" placeholder="e.g. North Gate Section 4">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Incident Date & Time</label>
+                        <input type="datetime-local" th:field="*{incidentDate}" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Detailed Description</label>
+                    <textarea th:field="*{description}" rows="4" class="w-full px-4 py-2 border border-gray-200 rounded-lg outline-none" placeholder="Describe the incident..."></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-gray-50 flex justify-end">
+                    <button type="submit" class="px-8 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg">
+                        SUBMIT REPORT
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head}"></head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div th:replace="~{layout :: sidebar}"></div>
+
+    <main class="ml-64 p-8">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Welcome, <span th:text="${currentUser != null && currentUser.fullName != null && !currentUser.fullName.isEmpty() ? currentUser.fullName : (currentUser != null ? currentUser.username : 'Guest')}">User</span>!</h1>
+                <p class="text-gray-500 mt-1">Logged in as: <span class="font-semibold text-green-700" th:text="${currentUser != null ? currentUser.role : 'GUEST'}">ROLE</span></p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white p-3 rounded-full shadow-sm border border-gray-100">
+                    <i class="far fa-bell text-gray-400"></i>
+                </div>
+                <div class="bg-green-700 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md">
+                    <span th:if="${currentUser != null}" th:text="${(currentUser.fullName != null && !currentUser.fullName.isEmpty()) ? #strings.substring(currentUser.fullName, 0, 1) : (currentUser.username != null && !currentUser.username.isEmpty() ? #strings.substring(currentUser.username, 0, 1) : 'U')}">U</span>
+                    <span th:if="${currentUser == null}">G</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Overview for All -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm font-medium">Tracking Species</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" th:text="${speciesCount}">128</h3>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-xl">
+                        <i class="fas fa-leaf text-blue-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm font-medium">Total Animals</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" th:text="${animalCount}">452</h3>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-xl">
+                        <i class="fas fa-paw text-orange-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm font-medium">Active Habitats</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" th:text="${habitatCount}">15</h3>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-xl">
+                        <i class="fas fa-mountain text-green-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm font-medium">Recorded Visits</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1" th:text="${visitCount}">1,240</h3>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-xl">
+                        <i class="fas fa-calendar-check text-purple-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Specific Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Actions/Recent -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Admin specific section -->
+                <section sec:authorize="hasRole('ADMIN')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <h2 class="font-bold text-gray-800">System Activity</h2>
+                        <span class="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded">Live Update</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <div th:each="species : ${recentSpecies}" class="flex items-start space-x-4">
+                                <div class="bg-gray-100 p-2 rounded-lg"><i class="fas fa-plus text-gray-400 text-xs"></i></div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700">New species added: <span class="text-green-700" th:text="${species.commonName != null ? species.commonName : 'Unknown'}">Species Name</span></p>
+                                    <p class="text-xs text-gray-400" th:text="${species.scientificName != null ? 'Scientific Name: ' + species.scientificName : 'Scientific Name: N/A'}">Metadata</p>
+                                </div>
+                            </div>
+                            <div th:if="${#lists.isEmpty(recentSpecies)}" class="text-center py-4 text-gray-400 text-sm">
+                                No recent activity found.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Ranger specific section -->
+                <section sec:authorize="hasRole('RANGER')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-yellow-50/50">
+                        <h2 class="font-bold text-gray-800">Open Incidents</h2>
+                        <a href="/incidents" class="text-xs font-bold text-yellow-700">VIEW ALL <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-xs font-bold text-gray-400 uppercase">
+                                    <th class="py-3">Type</th>
+                                    <th class="py-3">Habitat</th>
+                                    <th class="py-3">Status</th>
+                                    <th class="py-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-50">
+                                <tr th:each="incident : ${openIncidents}">
+                                    <td class="py-4 font-medium" th:text="${incident.incidentType != null ? incident.incidentType : 'N/A'}">Incident Type</td>
+                                    <td class="py-4" th:text="${incident.habitat != null ? incident.habitat.habitatName : (incident.animal != null && incident.animal.habitat != null ? incident.animal.habitat.habitatName : 'All Park')}">Habitat</td>
+                                    <td class="py-4">
+                                        <span class="px-2 py-1 bg-yellow-50 text-yellow-700 rounded text-[10px] font-bold" th:text="${incident.incidentStatus != null ? incident.incidentStatus : 'Unknown'}">STATUS</span>
+                                    </td>
+                                    <td class="py-4 text-right">
+                                        <a th:href="@{/incidents}" class="px-3 py-1 bg-yellow-600 text-white rounded-md text-xs font-bold">VIEW</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(openIncidents)}">
+                                    <td colspan="4" class="py-10 text-center text-gray-400">No open incidents reported.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Visitor specific section -->
+                <section sec:authorize="hasRole('VISITOR')" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-50 bg-blue-50/50 flex justify-between items-center">
+                        <h2 class="font-bold text-gray-800">Your Scheduled Visits</h2>
+                        <a href="/visits/add" class="text-xs font-bold text-blue-700">ADD NEW +</a>
+                    </div>
+                    <div class="p-6">
+                        <div th:if="${!#lists.isEmpty(recentVisits)}" class="space-y-4">
+                            <div th:each="visit : ${recentVisits}" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                <div class="flex items-center space-x-4">
+                                    <div class="bg-white p-2 rounded-lg shadow-sm">
+                                        <i class="fas fa-calendar-day text-blue-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800" th:text="${visit.habitat != null ? visit.habitat.habitatName : 'All Park'}">Habitat</p>
+                                        <p class="text-xs text-gray-400" th:text="${visit.visitDate != null ? #temporals.format(visit.visitDate, 'MMM dd, yyyy HH:mm') : 'Date N/A'}">Date</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">Confirmed</span>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(recentVisits)}" class="text-center py-10">
+                            <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-calendar-alt text-gray-300 text-xl"></i>
+                            </div>
+                            <p class="text-gray-500">No scheduled visits found.</p>
+                            <a href="/visits/add" class="mt-4 inline-block px-6 py-2 bg-green-700 text-white rounded-lg font-bold shadow-lg shadow-green-900/20">BOOK A VISIT</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Quick Links / Profile -->
+            <div class="space-y-8">
+                <section class="bg-green-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                    <i class="fas fa-leaf absolute -right-4 -bottom-4 text-8xl text-green-700 opacity-20 transform rotate-12"></i>
+                    <h3 class="text-lg font-bold mb-4">Conservation Tip</h3>
+                    <p class="text-green-100 text-sm leading-relaxed italic">"The preservation of biodiversity is not a luxury, but a necessity for human survival."</p>
+                </section>
+                
+                <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-800 mb-4">Quick Links</h3>
+                    <nav class="space-y-2">
+                        <a href="/species" class="block p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-sm text-gray-700 font-medium transition-colors border border-transparent hover:border-green-100">
+                            <i class="fas fa-search mr-2 text-green-600"></i> Explore Species
+                        </a>
+                        <a href="/habitats" class="block p-3 rounded-xl bg-gray-50 hover:bg-green-50 text-sm text-gray-700 font-medium transition-colors border border-transparent hover:border-green-100">
+                            <i class="fas fa-map-marked-alt mr-2 text-green-600"></i> Park Map
+                        </a>
+                    </nav>
+                </section>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

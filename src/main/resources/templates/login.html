@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Faunex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md border-t-8 border-green-700">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-green-900 tracking-tight">FAUNEX</h1>
+            <p class="text-green-600 font-medium mt-2">Sign in to manage wildlife</p>
+        </div>
+
+        <div th:if="${param.error}" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm text-sm" role="alert">
+            Invalid username or password.
+        </div>
+        
+        <div th:if="${param.logout}" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded shadow-sm text-sm" role="alert">
+            You have been logged out.
+        </div>
+
+        <div th:if="${param.success}" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm text-sm" role="alert">
+            Registration successful! Please login.
+        </div>
+
+        <form th:action="@{/login}" method="post" class="space-y-6">
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2 ml-1">Username</label>
+                <input type="text" name="username" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2 ml-1">Password</label>
+                <input type="password" name="password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all" required>
+            </div>
+            <button type="submit" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-green-900/30 transition-all transform hover:-translate-y-1">
+                SIGN IN
+            </button>
+        </form>
+        
+        <p class="mt-8 text-center text-gray-500 text-sm">
+            Don't have an account? 
+            <a th:href="@{/register}" class="text-green-700 font-bold hover:underline">Register here</a>
+        </p>
+    </div>
+</body>
+</html>
